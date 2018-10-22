@@ -18,22 +18,9 @@ function Step(name, requires, callback) {
 };
 
 function Flow(models) {
-    
-
-}
-
-
-function test() {
-    const steps = [
-	new Step('top a', []),
-	new Step('top b', []),
-	new Step('mid a', ['mid b']),
-	new Step('mid b', ['top a', 'top b']),
-	new Step('bottom', ['top b', 'mid b'])
-    ];
-
-    var map = {};
-
+    this.steps = steps || [];
+    this.map = {};
+    var map;
     steps
 	.map(function(e){
 	    map[e.name] = e;
@@ -68,6 +55,21 @@ function test() {
 	    })
 	    return e;
 	})
+    this.map = map;
+}
+
+
+function test() {
+    const steps = [
+	new Step('top a', []),
+	new Step('top b', []),
+	new Step('mid a', ['mid b']),
+	new Step('mid b', ['top a', 'top b']),
+	new Step('bottom', ['top b', 'mid b'])
+    ];
+
+    var map = {};
+
 	.forEach(function(e){
 	    console.log(e.name);
 	    console.log(e.result);		    
