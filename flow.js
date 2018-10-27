@@ -1,38 +1,100 @@
-function Flow(){
-    this.p = undefined; // previous result
+function Step(name, requires, callback) {
+    var me = this;
+    me.name = name;
+    me.requires = requires;
+    me.result = undefined;
 
-    this.do = function(n, ...args){
-	// console.log('inside do');		
-	// console.log(n);	
-	// console.log(args);
-	// console.log(this.p);
-	// console.log('-----------------');
-	var r;
-
-	// handle here
-	// if p is an array, then do for each
-	
-	if(args.length) {
-	    var r = n.call(this, args, this.p);
+    me.input = [];
+    me.requiredBy = [];
+    me.requiredByName = [];
+    
+    me.callback = callback || function(a){
+    	// console.log('processing: ', me.name);
+	// console.log(a);
+	if (me.input.length) {
+	    var t = 0;
+	    me.input.forEach(function(v){
+		t = t + v;
+	    })
+	    return t;
 	} else {
-	    var r = n.call(this, this.p);
+	    return Math.random()
 	}
-	this.p = r;
-	return this;
-    };
-
-    this.init = function(a) {
-	this.p = a;
-	return this
     }
-    this.log = function(){
-	console.log(this.p)
-	return this
-    }
+};
 
-    this.render = function(target){
-	this.p.forEach(function(e, i){
-	    target.appendChild(e);
+
+Step.prototype.process = function () {
+    return Promise.resolve().then(() => {
+	var me = this;
+	me.result = me.callback.apply(this, me.input)
+	me.requiredBy.forEach(function(e){
+	    e.input.push(me.result);
 	})
-    }
+    });
+};
+
+function Flow(steps) {
+    var me = this;
+    
+    me.processMap = {};
+    me.steps = steps;
+    
+    steps.forEach(function(m) {
+	me.processMap[m.name] = {
+	    promise: null,
+	    step: m
+	};
+    });
+
+    steps.forEach(function(m) {
+	m.requires.forEach(function(e){
+	    me.processMap[e].step.requiredByName.push(m.name)
+	    me.processMap[e].step.requiredBy.push(me.processMap[m.name].step)
+	});
+    });
+
 }
+
+Flow.prototype.processByName = function(stepName) {
+  return this.process(this.processMap[stepName].step);
+};
+
+Flow.prototype.processDependencies = function(step) {
+  return Promise.all(step.requires.map(r => this.processByName(r)));
+};
+
+Flow.prototype.process = function(step) {
+  const process = this.processMap[step.name];
+    if (!process.promise) {
+	process.promise = this
+	    .processDependencies(step)
+	    .then(() => step.process());
+  }
+  return process.promise;
+};
+
+Flow.prototype.render = function(callback){
+    var steps = this.steps;
+    var flow = this;
+    
+    return Promise.all(
+	steps.map(m => flow.process(m))
+    ).then(allResults => {
+	// console.log("All process finished");
+	var r = [];
+	flow.results().forEach(function(e){
+	    callback(e.result);
+	})
+    }, e => {
+	console.error(e);
+    });
+};
+
+Flow.prototype.results = function(){
+    return this.steps.filter(function(e){
+	return e.requiredBy.length == 0;
+    })
+}
+
+
