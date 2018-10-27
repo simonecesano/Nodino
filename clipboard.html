@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+  <head>
+    <meta charset="utf-8" /> 
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
+    <title></title>
+  </head>
+  
+  <body>
+    <canvas id="pasted">
+    </canvas>
+  </body>
+  <script>
+    $(function(){
+	document.onpaste = function(event){
+	    var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+		for(i = 0; i < items.length; i++) {
+		    console.log(items[i]);
+		    if ((items[i].kind == 'string') && (items[i].type.match('^text/plain'))) {
+			items[i].getAsString(function (s){
+			    console.log(i);
+			    console.log(s);
+			});
+		    } else if ((items[i].kind == 'file') && (items[i].type.match('^image/png'))) {
+			console.log(i);
+			var blob = items[i].getAsFile();
+
+			console.log(blob);
+			
+			var canvas = document.getElementById("pasted");
+			var ctx = canvas.getContext('2d');			
+			var img = new Image();
+			var URLObj = window.URL || window.webkitURL;
+			
+			img.onload = function(){
+			    console.log('here');
+			    canvas.width = this.width;
+			    canvas.height = this.height;
+			    ctx.drawImage(img, 0, 0);
+			}
+			img.src = URLObj.createObjectURL(blob);
+		    }; 
+		}
+	}
+    })
+  </script>
+</html>
