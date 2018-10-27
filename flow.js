@@ -7,6 +7,8 @@ function Step(name, requires, callback) {
     me.input = [];
     me.requiredBy = [];
     me.requiredByName = [];
+
+    
     
     me.callback = callback || function(a){
 	if (me.input.length) {
@@ -36,6 +38,10 @@ Step.prototype.process = function () {
 	    })
 	})
     } else if(typeof me.callback === "function") {
+	// console.log(me.name)
+	// console.log(me.callback.toString().split("\n").shift())
+	// console.log(me.callback.length)
+	
 	return Promise.resolve().then(() => {
 	    me.result = me.callback.apply(this, me.input)
 	    me.requiredBy.forEach(function(e){
@@ -92,13 +98,13 @@ Flow.prototype.process = function(step) {
   return process.promise;
 };
 
-Flow.prototype.render = function(callback){
+Flow.prototype.render = function(callback, canvasElement){
     var steps = this.steps;
     var flow = this;
+    var canvas = canvasElement || document.getElementsByTagName('svg').item(0)
 
     callback = callback ? callback :
 	function(e){
-	    var canvas = document.getElementsByTagName('svg').item(0)
 	    var append = function(e, c){
 		try { c.appendChild(e) }  catch(e) { console.log(e) }
 	    };
