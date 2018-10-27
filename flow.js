@@ -29,18 +29,23 @@ Step.prototype.setInput = function(key, value) {
 Step.prototype.process = function () {
     var me = this;
     if (me.callback.then) {
-	console.log(me.callback);
 	return me.callback.then(function(r){
 	    me.result = r
 	    me.requiredBy.forEach(function(e){
 		e.setInput(me.name, r);
 	    })
 	})
-    } else {
+    } else if(typeof me.callback === "function") {
 	return Promise.resolve().then(() => {
 	    me.result = me.callback.apply(this, me.input)
 	    me.requiredBy.forEach(function(e){
-		// e.input.push(me.result);
+		e.setInput(me.name, me.result);
+	    })
+	});
+    } else {
+	return Promise.resolve().then(() => {
+	    me.result = me.callback
+	    me.requiredBy.forEach(function(e){
 		e.setInput(me.name, me.result);
 	    })
 	});
@@ -94,21 +99,13 @@ Flow.prototype.render = function(callback){
     callback = callback ? callback :
 	function(e){
 	    var canvas = document.getElementsByTagName('svg').item(0)
-	    console.log(e);
+	    var append = function(e, c){
+		try { c.appendChild(e) }  catch(e) { console.log(e) }
+	    };
 	    if (Array.isArray(e)) {
-		e.forEach(function(r){
-		    try {
-			canvas.appendChild(r)
-		    } catch(e) {
-			console.log(e);
-		    }
-		})
+		e.forEach(function(r){ append(r, canvas) })
 	    } else {
-		try {
-		    canvas.appendChild(e)
-		} catch(e){
-		    console.log(e);
-		}
+		append(r, canvas);
 	    }
 	}
     
