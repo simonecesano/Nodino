@@ -9,8 +9,6 @@ function Step(name, requires, callback) {
     me.requiredByName = [];
     
     me.callback = callback || function(a){
-    	// console.log('processing: ', me.name);
-	// console.log(a);
 	if (me.input.length) {
 	    var t = 0;
 	    me.input.forEach(function(v){
@@ -23,13 +21,18 @@ function Step(name, requires, callback) {
     }
 };
 
+Step.prototype.setInput = function(key, value) {
+    var i = this.requires.indexOf(key);
+    this.input[i] = value;
+}
 
 Step.prototype.process = function () {
     return Promise.resolve().then(() => {
 	var me = this;
 	me.result = me.callback.apply(this, me.input)
 	me.requiredBy.forEach(function(e){
-	    e.input.push(me.result);
+	    // e.input.push(me.result);
+	    e.setInput(me.name, me.result);
 	})
     });
 };
@@ -77,11 +80,31 @@ Flow.prototype.process = function(step) {
 Flow.prototype.render = function(callback){
     var steps = this.steps;
     var flow = this;
+
+    callback = callback ? callback :
+	function(e){
+	    var canvas = document.getElementsByTagName('svg').item(0)
+	    console.log(e);
+	    if (Array.isArray(e)) {
+		e.forEach(function(r){
+		    try {
+			canvas.appendChild(r)
+		    } catch(e) {
+			console.log(e);
+		    }
+		})
+	    } else {
+		try {
+		    canvas.appendChild(e)
+		} catch(e){
+		    console.log(e);
+		}
+	    }
+	}
     
     return Promise.all(
 	steps.map(m => flow.process(m))
     ).then(allResults => {
-	// console.log("All process finished");
 	var r = [];
 	flow.results().forEach(function(e){
 	    callback(e.result);
