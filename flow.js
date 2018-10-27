@@ -27,14 +27,24 @@ Step.prototype.setInput = function(key, value) {
 }
 
 Step.prototype.process = function () {
-    return Promise.resolve().then(() => {
-	var me = this;
-	me.result = me.callback.apply(this, me.input)
-	me.requiredBy.forEach(function(e){
-	    // e.input.push(me.result);
-	    e.setInput(me.name, me.result);
+    var me = this;
+    if (me.callback.then) {
+	console.log(me.callback);
+	return me.callback.then(function(r){
+	    me.result = r
+	    me.requiredBy.forEach(function(e){
+		e.setInput(me.name, r);
+	    })
 	})
-    });
+    } else {
+	return Promise.resolve().then(() => {
+	    me.result = me.callback.apply(this, me.input)
+	    me.requiredBy.forEach(function(e){
+		// e.input.push(me.result);
+		e.setInput(me.name, me.result);
+	    })
+	});
+    }
 };
 
 function Flow(steps) {
