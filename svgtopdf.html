@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+    <head>
+      <script
+	src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	crossorigin="anonymous"></script>
+    
+    <script src="https://fastcdn.org/FileSaver.js/1.1.20151003/FileSaver.min.js"></script>
+      <script src="./pdfkit.js"></script>
+      <script src="./blobstream.js"></script>
+      <script src="./svg-to-pdfkit.js"></script>
+      <title></title>
+      <meta charset="utf-8" /> 
+    </head>
+    
+    <body>
+      <button id="makepdf">Make PDF</button>
+      <div id="content">
+      </div>
+    </body>
+    <script>
+    PDFDocument.prototype.addSVG = function(svg, x, y, options) {
+	return SVGtoPDF(this, svg, x, y, options), this;
+    };
+$(function(){
+    $.get('./rough.svg', function(d){
+	$('#content').html(d.activeElement);
+	$('#makepdf').click(function(e){
+	    console.log('here');
+	    var doc = new PDFDocument;
+	    doc.addSVG($('#content').html(), 0, 0, {useCSS:true})
+	    let stream = doc.pipe(blobStream());
+	    stream.on('finish', function() {
+		let blob = stream.toBlob('application/pdf');
+		saveAs(blob, "rough.pdf");
+	    });
+	    doc.end();
+	})
+    })
+    
+  })
+</script>
+</html>
