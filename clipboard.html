@@ -11,6 +11,7 @@
   </head>
   
   <body>
+    <div>220514 | 32922</div>
     <canvas id="pasted">
     </canvas>
   </body>
@@ -23,12 +24,14 @@
 		    if ((items[i].kind == 'string') && (items[i].type.match('^text/plain'))) {
 			items[i].getAsString(function (s){
 			    console.log(i);
-			    console.log(s);
+			       console.log(s);
+			       var parser = new DOMParser();
+			       var doc = parser.parseFromString(s, "image/svg+xml");
+			       console.log(doc);
 			});
 		    } else if ((items[i].kind == 'file') && (items[i].type.match('^image/png'))) {
 			console.log(i);
 			var blob = items[i].getAsFile();
-
 			console.log(blob);
 			
 			var canvas = document.getElementById("pasted");
@@ -37,9 +40,9 @@
 			var URLObj = window.URL || window.webkitURL;
 			
 			img.onload = function(){
-			    console.log('here');
 			    canvas.width = this.width;
 			    canvas.height = this.height;
+			    console.log(canvas.width, canvas.height)
 			    ctx.drawImage(img, 0, 0);
 			}
 			img.src = URLObj.createObjectURL(blob);
