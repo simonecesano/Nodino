@@ -12,21 +12,19 @@
 </head>
 
 <body>
-This is stuff I created while trying to figure out how to do a node-based environment for SVG graphics
+<p>This is stuff I created while trying to figure out how to do a node-based environment for SVG graphics</p>
 
-- [clipboard.html](clipboard.html): experiment with pasting images 
-- [flow.html](flow.html): an experiment on shapes driven by another shape (the size of the rectangles is determined by
-  the Y-axis position on the bezier
-- [picture.html](picture.html): a picture being used as data input for vector output
-- [poisson.html](poisson.html): poisson distribution of points, and [rough.js](https://roughjs.com/) used to draw the lines
-- [svgtopdf.html](svgtopdf.html): converting SVG to pdf via [pdfkit.js](http://pdfkit.org/) and [svg-to-pdf](https://github.com/alafr/SVG-to-PDFKit)  
+<ul>
+<li><a href="clipboard.html">clipboard.html</a>: experiment with pasting images </li>
+<li><a href="flow.html">flow.html</a>: an experiment on shapes driven by another shape (the size of the rectangles is determined by
+the Y-axis position on the bezier</li>
+<li><a href="picture.html">picture.html</a>: a picture being used as data input for vector output</li>
+<li><a href="poisson.html">poisson.html</a>: poisson distribution of points, and <a href="https://roughjs.com/">rough.js</a> used to draw the lines</li>
+<li><a href="svgtopdf.html">svgtopdf.html</a>: converting SVG to pdf via <a href="http://pdfkit.org/">pdfkit.js</a> and <a href="https://github.com/alafr/SVG-to-PDFKit">svg-to-pdf</a>  </li>
+</ul>
 
 </body>
 <script>
-  $(function(){
-  var converter = new showdown.Converter();									    
-  $('body').html(converter.makeHtml($('body').html()))
-  })
 </script>
 
 </html>
