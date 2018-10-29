@@ -2,13 +2,31 @@
 
 <html>
 <head>
-  <meta name="generator" content=
-  "HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.18.1), see www.w3.org">
-
+  <script
+    src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.8.7/showdown.min.js"></script>
+  
   <title></title>
 </head>
 
 <body>
 This is stuff I created while trying to figure out how to do a node-based environment for SVG graphics
+
+- [clipboard.html](clipboard.html): experiment with pasting images 
+- [flow.html](flow.html): an experiment on shapes driven by another shape (the size of the rectangles is determined by
+  the Y-axis position on the bezier
+- [picture.html](picture.html): a picture being used as data input for vector output
+- [poisson.html](poisson.html): poisson distribution of points, and [rough.js](https://roughjs.com/) used to draw the lines
+- [svgtopdf.html](svgtopdf.html): converting SVG to pdf via [pdfkit.js](http://pdfkit.org/) and [svg-to-pdf](https://github.com/alafr/SVG-to-PDFKit)  
+
 </body>
+<script>
+  $(function(){
+  var converter = new showdown.Converter();									    
+  $('body').html(converter.makeHtml($('body').html()))
+  })
+</script>
+
 </html>
